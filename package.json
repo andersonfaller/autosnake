@@ -1,0 +1,11 @@
+{
+  "name": "autosnake",
+  "version": "2.0.0",
+  "description": "Programmable autonomous dual snake: write a snake brain in SnakeScript and watch it fight.",
+  "private": true,
+  "license": "MIT",
+  "scripts": {
+    "test": "node --test tests/*.test.js",
+    "start": "npx http-server -c-1 ."
+  }
+}
