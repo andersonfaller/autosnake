@@ -1,480 +1,141 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Programmable Retro Snake</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
-        
-        body {
-            font-family: 'Press Start 2P', monospace;
-            background-color: #000;
-            color: #fff;
-            margin: 0;
-            overflow: hidden;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AutoSnake</title>
+  <meta name="description" content="Program a snake brain in SnakeScript and watch it fight another one.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Press+Start+2P&display=swap">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/hint/show-hint.min.css">
+  <link rel="stylesheet" href="css/style.css">
 
-        #game-container {
-            position: relative;
-            background: #111;
-            padding: 4px;
-            border: 4px solid #fff;
-            display: flex;
-            justify-content: center;
-        }
+  <!-- The editor upgrades to CodeMirror when the CDN is reachable; a plain textarea works offline. -->
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.js"></script>
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/javascript/javascript.min.js"></script>
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/hint/show-hint.min.js"></script>
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/edit/matchbrackets.min.js"></script>
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/edit/closebrackets.min.js"></script>
 
-        /* CRT Overlay Effect */
-        #game-container::after {
-            content: " ";
-            display: block;
-            position: absolute;
-            top: 0; left: 0; bottom: 0; right: 0;
-            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
-            z-index: 2;
-            background-size: 100% 4px, 6px 100%;
-            pointer-events: none;
-        }
-
-        canvas {
-            background-color: #000;
-            display: block;
-        }
-
-        .score-box {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            padding: 0.5rem 1rem;
-            background: #000;
-            border: 2px solid #fff;
-        }
-
-        .dot-cyan { width: 12px; height: 12px; background-color: #39ff14; }
-        .dot-pink { width: 12px; height: 12px; background-color: #ff003c; }
-        
-        input[type=range] { accent-color: #fff; }
-
-        /* Code Editor Styling */
-        .editor-container {
-            display: flex;
-            flex-direction: column;
-            width: 380px;
-            height: 600px;
-            background: #0a0a0a;
-        }
-
-        .code-header {
-            padding: 10px;
-            font-size: 10px;
-            text-align: center;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            border: 2px solid;
-            border-bottom: none;
-        }
-
-        .code-textarea {
-            flex-grow: 1;
-            background: #050505;
-            padding: 15px;
-            font-family: 'Courier New', Courier, monospace;
-            font-weight: bold;
-            font-size: 13px;
-            line-height: 1.4;
-            border: 2px solid;
-            resize: none;
-            outline: none;
-            white-space: pre;
-            overflow-wrap: normal;
-            overflow-x: auto;
-        }
-
-        .p1-theme .code-header { color: #39ff14; border-color: #39ff14; }
-        .p1-theme .code-textarea { color: #39ff14; border-color: #39ff14; }
-        .p2-theme .code-header { color: #ff003c; border-color: #ff003c; }
-        .p2-theme .code-textarea { color: #ff003c; border-color: #ff003c; }
-
-        /* Hide scrollbars for cleaner retro look */
-        .code-textarea::-webkit-scrollbar { width: 8px; height: 8px; }
-        .code-textarea::-webkit-scrollbar-track { background: #111; }
-        .code-textarea::-webkit-scrollbar-thumb { background: #333; }
-    </style>
+  <script defer src="js/engine.js"></script>
+  <script defer src="js/runtime.js"></script>
+  <script defer src="js/docs.js"></script>
+  <script defer src="js/bots.js"></script>
+  <script defer src="js/brain.js"></script>
+  <script defer src="js/editor.js"></script>
+  <script defer src="js/main.js"></script>
 </head>
 <body>
 
-<div class="flex flex-row w-full max-w-[1500px] justify-between items-stretch gap-6 px-4">
-    
-    <!-- Player 1 Editor -->
-    <div class="editor-container p1-theme">
-        <div class="code-header">Player 1 AI Script</div>
-        <textarea id="ai-script-1" class="code-textarea" spellcheck="false"></textarea>
+<header class="topbar">
+  <div class="brand">
+    <h1>AUTO<span>SNAKE</span></h1>
+    <p>Program a snake. Out-think the other one.</p>
+  </div>
+  <button id="docsBtn" class="btn btn-ghost" type="button" aria-haspopup="dialog">? API</button>
+</header>
+
+<main class="arena">
+
+  <section class="player" id="player-1" style="--accent: #39ff14" aria-label="Player 1 brain">
+    <div class="player-bar">
+      <span class="player-tag">P1</span>
+      <select id="preset-1" aria-label="Player 1 preset brain"></select>
+    </div>
+    <div class="editor">
+      <textarea id="code-1" spellcheck="false" autocapitalize="off" autocomplete="off" aria-label="Player 1 SnakeScript code"></textarea>
+    </div>
+    <div class="status" id="status-1" role="status"></div>
+    <div class="console-wrap">
+      <div class="console-head"><span>CONSOLE</span><button class="link" type="button" data-clear="1">clear</button></div>
+      <ol class="console" id="console-1" aria-label="Player 1 console"></ol>
+    </div>
+  </section>
+
+  <section class="stage" aria-label="Arena">
+    <div class="scoreboard">
+      <div class="card" style="--accent: #39ff14">
+        <div class="card-row"><b>P1</b><span>WINS <strong id="wins-1">0</strong></span></div>
+        <div class="card-row"><span>LEN <strong id="len-1">3</strong></span><span class="think" id="ms-1" title="Think time per tick"></span></div>
+        <div class="health" title="Health: refills when eating, -1 per tick"><i id="hp-1"></i></div>
+      </div>
+      <div class="round">
+        <div>ROUND <strong id="round">1</strong></div>
+        <div>TICK <strong id="tick">0</strong></div>
+        <div>DRAWS <strong id="draws">0</strong></div>
+      </div>
+      <div class="card" style="--accent: #ff003c">
+        <div class="card-row"><b>P2</b><span>WINS <strong id="wins-2">0</strong></span></div>
+        <div class="card-row"><span>LEN <strong id="len-2">3</strong></span><span class="think" id="ms-2" title="Think time per tick"></span></div>
+        <div class="health" title="Health: refills when eating, -1 per tick"><i id="hp-2"></i></div>
+      </div>
     </div>
 
-    <!-- Game Center -->
-    <div class="flex flex-col items-center">
-        <div class="w-full flex justify-between items-center mb-4">
-            <div class="score-box" style="border-color: #39ff14;">
-                <div class="dot-cyan"></div>
-                <p id="score1" class="text-xl font-bold" style="color: #39ff14;">0</p>
-            </div>
-
-            <div class="text-center mx-4">
-                <h1 class="text-xl font-bold text-white tracking-widest uppercase mb-1">RETRO<span style="color: #ff003c;">SNAKE</span></h1>
-                <p class="text-[8px] text-gray-400">Programmable Deathmatch</p>
-            </div>
-
-            <div class="score-box" style="border-color: #ff003c;">
-                <p id="score2" class="text-xl font-bold" style="color: #ff003c;">0</p>
-                <div class="dot-pink"></div>
-            </div>
-        </div>
-
-        <div id="game-container">
-            <canvas id="gameCanvas" width="500" height="500"></canvas>
-            
-            <div id="gameOverScreen" class="hidden absolute inset-0 z-10 flex flex-col items-center justify-center bg-black/80">
-                <h2 class="text-3xl text-white mb-6" style="text-shadow: 2px 2px 0 #ff003c;">GAME OVER</h2>
-                <p id="winnerText" class="text-lg text-yellow-400 mb-8"></p>
-                <button id="restartBtn" class="px-6 py-3 border-4 border-white text-white hover:bg-white hover:text-black uppercase text-xs z-20 transition-colors pointer-events-auto">Play Again</button>
-            </div>
-        </div>
-
-        <div class="mt-4 flex items-center justify-between w-full bg-black p-3 border-2 border-white">
-            <button id="toggleBtn" class="bg-white hover:bg-gray-300 text-black px-4 py-2 font-bold uppercase text-[10px] transition-colors focus:outline-none">
-                <span id="btnText">PAUSE</span>
-            </button>
-            
-            <div class="flex items-center gap-2">
-                <span class="text-[8px] text-white uppercase">Speed:</span>
-                <input type="range" id="speedSlider" min="1" max="60" value="20" class="w-24 cursor-pointer">
-            </div>
-
-            <button id="resetBtn" class="text-white hover:text-gray-400 transition-colors focus:outline-none text-[8px] uppercase font-bold">
-                Reset Stats
-            </button>
-        </div>
+    <div class="board-wrap">
+      <canvas id="board" width="500" height="500" aria-label="Game board"></canvas>
+      <div id="overlay" class="overlay" hidden>
+        <h2 id="overlay-title">DRAW</h2>
+        <p id="overlay-reason"></p>
+        <button id="nextBtn" class="btn" type="button">NEXT ROUND</button>
+        <p class="overlay-auto" id="overlay-auto" hidden>auto-play: next round in a moment</p>
+      </div>
     </div>
 
-    <!-- Player 2 Editor -->
-    <div class="editor-container p2-theme">
-        <div class="code-header">Player 2 AI Script</div>
-        <textarea id="ai-script-2" class="code-textarea" spellcheck="false"></textarea>
+    <div class="controls">
+      <button id="playBtn" class="btn" type="button">❚❚ PAUSE</button>
+      <button id="stepBtn" class="btn btn-ghost" type="button" disabled>STEP ▸</button>
+      <button id="restartBtn" class="btn btn-ghost" type="button">↺ RESTART</button>
+      <label class="speed">SPEED
+        <input type="range" id="speed" min="1" max="61" value="15">
+        <output id="speedOut" for="speed">15/s</output>
+      </label>
+      <label class="check"><input type="checkbox" id="autoplay" checked> AUTO-PLAY</label>
+      <button id="resetStatsBtn" class="link" type="button">reset stats</button>
     </div>
+    <p class="keys">
+      <kbd>Space</kbd> pause · <kbd>→</kbd> step · <kbd>R</kbd> restart · <kbd>?</kbd> API ·
+      <kbd>Ctrl</kbd>+<kbd>Space</kbd> autocomplete
+    </p>
+  </section>
 
-</div>
+  <section class="player" id="player-2" style="--accent: #ff003c" aria-label="Player 2 brain">
+    <div class="player-bar">
+      <span class="player-tag">P2</span>
+      <select id="preset-2" aria-label="Player 2 preset brain"></select>
+    </div>
+    <div class="editor">
+      <textarea id="code-2" spellcheck="false" autocapitalize="off" autocomplete="off" aria-label="Player 2 SnakeScript code"></textarea>
+    </div>
+    <div class="status" id="status-2" role="status"></div>
+    <div class="console-wrap">
+      <div class="console-head"><span>CONSOLE</span><button class="link" type="button" data-clear="2">clear</button></div>
+      <ol class="console" id="console-2" aria-label="Player 2 console"></ol>
+    </div>
+  </section>
 
-<script>
-    const defaultAICode = `/*
-  API: gameState Object
-  {
-    me: { head: {x,y}, body: [{x,y}...], dir: {x,y} },
-    enemy: { head: {x,y}, body: [{x,y}...] },
-    food: {x,y},
-    board: { cols, rows }
-  }
-  Output must be an object: {x: dx, y: dy} 
-  where dx and dy are 1, 0, or -1.
-*/
-const { me, enemy, food, board } = gameState;
+</main>
 
-// Helper to find safe adjacent tiles
-function getNeighbors(cell) {
-  return [{x: 0, y: -1}, {x: 0, y: 1}, {x: -1, y: 0}, {x: 1, y: 0}]
-    .map(m => ({x: cell.x + m.x, y: cell.y + m.y, dx: m.x, dy: m.y}))
-    .filter(n =>
-      n.x >= 0 && n.x < board.cols && 
-      n.y >= 0 && n.y < board.rows &&
-      !me.body.some((p, i) => i < me.body.length - 1 && p.x === n.x && p.y === n.y) &&
-      !enemy.body.some(p => p.x === n.x && p.y === n.y)
-    );
-}
+<dialog id="docs" class="docs" aria-labelledby="docs-title">
+  <div class="docs-head">
+    <h2 id="docs-title">SNAKE<span>SCRIPT</span></h2>
+    <button id="docsClose" class="btn btn-ghost" type="button" aria-label="Close">✕</button>
+  </div>
+  <div class="docs-body">
+    <p class="lead">
+      SnakeScript is JavaScript with a snake-sized vocabulary. Your code is the body of a
+      function that runs once per tick: look at the world, then <code>return</code>
+      <code>'up'</code>, <code>'down'</code>, <code>'left'</code> or <code>'right'</code>.
+      Changes go live as you type; if the code does not parse, the last working version keeps playing.
+    </p>
+    <pre>// A complete brain: chase the food, otherwise find room to breathe.
+return toward(food) ?? safest();</pre>
+    <div id="docs-api"></div>
+    <h3>Rules</h3>
+    <ul id="docs-rules"></ul>
+  </div>
+</dialog>
 
-// Breadth-First Search for food
-let queue = [me.head];
-let cameFrom = {[\`\${me.head.x},\${me.head.y}\`]: null};
-let found = false;
-
-while (queue.length > 0) {
-  let curr = queue.shift();
-  if (curr.x === food.x && curr.y === food.y) { found = true; break; }
-  for (let n of getNeighbors(curr)) {
-    let key = \`\${n.x},\${n.y}\`;
-    if (!(key in cameFrom)) {
-      cameFrom[key] = {parent: curr, dx: n.dx, dy: n.dy};
-      queue.push(n);
-    }
-  }
-}
-
-// Backtrack path if food is reachable
-if (found) {
-  let step = cameFrom[\`\${food.x},\${food.y}\`];
-  while (step && step.parent && (step.parent.x !== me.head.x || step.parent.y !== me.head.y)) {
-    step = cameFrom[\`\${step.parent.x},\${step.parent.y}\`];
-  }
-  if (step) return {x: step.dx, y: step.dy};
-}
-
-// Survival mode: pick first available safe move
-let neighbors = getNeighbors(me.head);
-if (neighbors.length > 0) return {x: neighbors[0].dx, y: neighbors[0].dy};
-
-// Inevitable collision, keep moving forward
-return me.dir;`;
-
-    // Populate the textareas
-    document.getElementById('ai-script-1').value = defaultAICode;
-    document.getElementById('ai-script-2').value = defaultAICode;
-
-    const canvas = document.getElementById('gameCanvas');
-    const ctx = canvas.getContext('2d');
-    const score1El = document.getElementById('score1');
-    const score2El = document.getElementById('score2');
-    
-    const GRID_SIZE = 20;
-    const COLS = canvas.width / GRID_SIZE;
-    const ROWS = canvas.height / GRID_SIZE;
-    
-    let isPaused = false;
-    let gameOver = false;
-    let framesPerSecond = 20;
-    let lastTime = 0;
-    let accumulatedTime = 0;
-    let food = null;
-
-    class Snake {
-        constructor(id, startX, startY, color, startDir) {
-            this.id = id;
-            this.color = color;
-            this.reset(startX, startY, startDir);
-            this.score = 0;
-        }
-
-        reset(startX, startY, startDir) {
-            this.body = [
-                {x: startX, y: startY},
-                {x: startX - startDir.x, y: startY - startDir.y},
-                {x: startX - startDir.x * 2, y: startY - startDir.y * 2}
-            ];
-            this.dir = startDir;
-            this.alive = true;
-        }
-
-        updateScore() {
-            this.score++;
-            if (this.id === 1) score1El.innerText = this.score;
-            if (this.id === 2) score2El.innerText = this.score;
-        }
-    }
-
-    let snake1 = new Snake(1, 5, Math.floor(ROWS/2), '#39ff14', {x: 1, y: 0});
-    let snake2 = new Snake(2, COLS - 6, Math.floor(ROWS/2), '#ff003c', {x: -1, y: 0});
-
-    function spawnFood() {
-        let valid = false;
-        while (!valid) {
-            food = {
-                x: Math.floor(Math.random() * COLS),
-                y: Math.floor(Math.random() * ROWS)
-            };
-            valid = true;
-            for (let s of [snake1, snake2]) {
-                for (let part of s.body) {
-                    if (part.x === food.x && part.y === food.y) {
-                        valid = false;
-                        break;
-                    }
-                }
-            }
-        }
-    }
-
-    function buildGameState(me, enemy) {
-        return {
-            me: {
-                head: {x: me.body[0].x, y: me.body[0].y},
-                body: me.body.map(p => ({x: p.x, y: p.y})),
-                dir: {x: me.dir.x, y: me.dir.y}
-            },
-            enemy: {
-                head: {x: enemy.body[0].x, y: enemy.body[0].y},
-                body: enemy.body.map(p => ({x: p.x, y: p.y}))
-            },
-            food: {x: food.x, y: food.y},
-            board: {cols: COLS, rows: ROWS}
-        };
-    }
-
-    function executeAI(snake, enemy, scriptId) {
-        const code = document.getElementById(scriptId).value;
-        const state = buildGameState(snake, enemy);
-        let nextDir = snake.dir; // Default fallback: go straight
-
-        try {
-            // Safely encapsulate execution
-            const aiFunction = new Function('gameState', code);
-            const result = aiFunction(state);
-
-            // Validate output format and legality
-            if (result && typeof result.x === 'number' && typeof result.y === 'number') {
-                let nx = result.x > 0 ? 1 : (result.x < 0 ? -1 : 0);
-                let ny = result.y > 0 ? 1 : (result.y < 0 ? -1 : 0);
-                
-                // Ensure the move is strictly horizontal or vertical (1 block distance)
-                if (Math.abs(nx) + Math.abs(ny) === 1) {
-                    // Prevent immediate 180 degree suicide turns
-                    if (!(nx === -snake.dir.x && ny === -snake.dir.y)) {
-                        nextDir = {x: nx, y: ny};
-                    }
-                }
-            }
-        } catch (e) {
-            // Fail silently: snake continues forward
-            // (Errors will just cause the code above to default to snake.dir)
-        }
-
-        return nextDir;
-    }
-
-    function update() {
-        if (gameOver) return;
-
-        // Fetch directions dynamically from user scripts every frame
-        if (snake1.alive) snake1.dir = executeAI(snake1, snake2, 'ai-script-1');
-        if (snake2.alive) snake2.dir = executeAI(snake2, snake1, 'ai-script-2');
-
-        for (let s of [snake1, snake2]) {
-            if (!s.alive) continue;
-            
-            let head = s.body[0];
-            let newHead = {x: head.x + s.dir.x, y: head.y + s.dir.y};
-            
-            s.body.unshift(newHead);
-            
-            if (newHead.x === food.x && newHead.y === food.y) {
-                s.updateScore();
-                spawnFood();
-            } else {
-                s.body.pop();
-            }
-        }
-
-        // Collision detection
-        let collisionDetected = false;
-        for (let s of [snake1, snake2]) {
-            if (!s.alive) continue;
-            let head = s.body[0];
-            let enemy = s.id === 1 ? snake2 : snake1;
-
-            if (head.x < 0 || head.x >= COLS || head.y < 0 || head.y >= ROWS) {
-                s.alive = false; collisionDetected = true;
-            }
-
-            for (let i = 1; i < s.body.length; i++) {
-                if (head.x === s.body[i].x && head.y === s.body[i].y) {
-                    s.alive = false; collisionDetected = true;
-                }
-            }
-
-            if (enemy.alive) {
-                for (let i = 0; i < enemy.body.length; i++) {
-                    if (head.x === enemy.body[i].x && head.y === enemy.body[i].y) {
-                        if (i === 0) enemy.alive = false; // Head-to-head tie
-                        s.alive = false; collisionDetected = true;
-                    }
-                }
-            }
-        }
-
-        if (collisionDetected) {
-            gameOver = true;
-            let winnerMsg = "DRAW!";
-            if (!snake1.alive && snake2.alive) winnerMsg = "PLAYER 2 WINS!";
-            if (snake1.alive && !snake2.alive) winnerMsg = "PLAYER 1 WINS!";
-            
-            document.getElementById('gameOverScreen').classList.remove('hidden');
-            document.getElementById('winnerText').innerText = winnerMsg;
-        }
-    }
-
-    function drawRect(x, y, color) {
-        ctx.fillStyle = color;
-        ctx.fillRect(x * GRID_SIZE + 1, y * GRID_SIZE + 1, GRID_SIZE - 2, GRID_SIZE - 2);
-    }
-
-    function draw() {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        drawRect(food.x, food.y, '#ffffff');
-
-        for (let s of [snake1, snake2]) {
-            if (!s.alive && !gameOver) continue;
-            for (let i = 0; i < s.body.length; i++) {
-                let part = s.body[i];
-                drawRect(part.x, part.y, i === 0 ? '#ffffff' : s.color);
-            }
-        }
-    }
-
-    function gameLoop(timestamp) {
-        if (!lastTime) lastTime = timestamp;
-        let deltaTime = timestamp - lastTime;
-        lastTime = timestamp;
-
-        if (!isPaused) {
-            accumulatedTime += deltaTime;
-            let timePerFrame = 1000 / framesPerSecond;
-
-            while (accumulatedTime >= timePerFrame) {
-                update();
-                accumulatedTime -= timePerFrame;
-            }
-        }
-        
-        draw();
-        requestAnimationFrame(gameLoop);
-    }
-
-    // UI Controls
-    document.getElementById('toggleBtn').addEventListener('click', () => {
-        if (gameOver) return;
-        isPaused = !isPaused;
-        document.getElementById('btnText').innerText = isPaused ? 'PLAY' : 'PAUSE';
-    });
-
-    document.getElementById('speedSlider').addEventListener('input', (e) => {
-        framesPerSecond = parseInt(e.target.value);
-    });
-
-    function resetGame() {
-        gameOver = false;
-        isPaused = false;
-        document.getElementById('btnText').innerText = 'PAUSE';
-        document.getElementById('gameOverScreen').classList.add('hidden');
-        snake1.reset(5, Math.floor(ROWS/2), {x: 1, y: 0});
-        snake2.reset(COLS - 6, Math.floor(ROWS/2), {x: -1, y: 0});
-        spawnFood();
-    }
-
-    document.getElementById('restartBtn').addEventListener('click', resetGame);
-
-    document.getElementById('resetBtn').addEventListener('click', () => {
-        snake1.score = 0;
-        snake2.score = 0;
-        score1El.innerText = 0;
-        score2El.innerText = 0;
-        resetGame();
-    });
-
-    // Initialize
-    spawnFood();
-    requestAnimationFrame(gameLoop);
-
-</script>
 </body>
 </html>
